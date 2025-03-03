@@ -1,54 +1,61 @@
+# Animal Verification Pipeline
 
-# NER Classification Project
+## Description
+This project verifies the match between a textual description of an animal and its image. It utilizes two models:
+- **AnimalNER** — a Named Entity Recognition (NER) model that extracts animal names from text.
+- **AnimalClassifier** — an image classification model that identifies the animal in an image.
 
-## Overview
-This project focuses on Named Entity Recognition (NER) using machine learning techniques. The goal is to build a model that can accurately identify and classify named entities in text data.
+## File Structure
+- `pipeline.py` — the main script that coordinates the verification process.
+- `ner_inference.py` — contains the `AnimalNER` class for extracting animal names from text.
+- `image_classification_inference.py` — contains the `AnimalClassifier` class for image classification.
+- `demo2.ipynb` — Jupyter Notebook for code demonstration.
 
-## Project Structure
-```
-/E:/projects/Test_intership/NER_classification/
-│
-├── data/
-│   ├── train/          # Training data
-│   ├── test/           # Testing data
-│   └── validation/     # Validation data
-│
-├── notebooks/          # Jupyter notebooks for experiments
-│
-├── src/                # Source code for the project
-│   ├── data_loader.py  # Script to load and preprocess data
-│   ├── model.py        # Model architecture
-│   ├── train.py        # Training script
-│   └── evaluate.py     # Evaluation script
-│
-└── README.md           # Project documentation
-```
+## Requirements
+The project requires Python 3 and the following libraries:
+- `torch`
+- `transformers`
+- `torchvision`
+- `PIL`
+- `argparse`
+- `json`
 
-## Installation
-To run this project, you need to have Python 3.x installed. You can install the required dependencies using pip:
-```bash
-pip install -r requirements.txt
+Install dependencies with:
+```sh
+pip install torch torchvision transformers pillow
 ```
 
 ## Usage
-1. **Data Preparation**: Ensure that your data is organized in the `data/` directory as shown in the project structure.
-2. **Training**: Run the training script to train the model.
-    ```bash
-    python src/train.py
-    ```
-3. **Evaluation**: Evaluate the model using the evaluation script.
-    ```bash
-    python src/evaluate.py
-    ```
 
-## Results
-The results of the model evaluation will be saved in the `results/` directory. You can analyze the performance metrics and visualizations to understand how well the model is performing.
+### Running `pipeline.py`
+```sh
+python pipeline.py --text "A fox in the forest" --image_path "image.jpg" --ner_model_path "path_to_ner_model" --classifier_model_path "path_to_classifier_model"
+```
+Parameters:
+- `--text` — text description of the image.
+- `--image_path` — path to the image file.
+- `--ner_model_path` — path to the pre-trained NER model.
+- `--classifier_model_path` — path to the image classification model.
 
-## Contributing
-If you would like to contribute to this project, please fork the repository and submit a pull request. We welcome all contributions!
+### Running `ner_inference.py`
+```sh
+python ner_inference.py --model_path "path_to_ner_model" --text "A lion is running."
+```
+or for a text file:
+```sh
+python ner_inference.py --model_path "path_to_ner_model" --input_file "texts.txt"
+```
 
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+### Running `image_classification_inference.py`
+```sh
+python image_classification_inference.py --model_path "path_to_classifier_model" --image_path "image.jpg"
+```
+or for a directory of images:
+```sh
+python image_classification_inference.py --model_path "path_to_classifier_model" --image_dir "images/" --output_file "results.json"
+```
 
-## Acknowledgements
-We would like to thank all the contributors and the open-source community for their valuable support and resources.
+### Using `demo2.ipynb`
+Open `demo2.ipynb` in Jupyter Notebook and execute the cells to interactively test the code.
+
+
