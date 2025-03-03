@@ -12,10 +12,10 @@ The project includes three different classification models:
 
 ## Installation
 
-Before running the code, make sure you have installed the required libraries. You can install them using:
+Before running the code, install the required dependencies using:
 
 ```bash
-pip install torch torchvision scikit-learn numpy
+pip install -r requirements.txt
 ```
 
 ## Usage

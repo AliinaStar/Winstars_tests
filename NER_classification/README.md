@@ -11,18 +11,12 @@ This project verifies the match between a textual description of an animal and i
 - `image_classification_inference.py` — contains the `AnimalClassifier` class for image classification.
 - `demo2.ipynb` — Jupyter Notebook for code demonstration.
 
-## Requirements
-The project requires Python 3 and the following libraries:
-- `torch`
-- `transformers`
-- `torchvision`
-- `PIL`
-- `argparse`
-- `json`
+## Installation
 
-Install dependencies with:
-```sh
-pip install torch torchvision transformers pillow
+Before running the code, install the required dependencies using:
+
+```bash
+pip install -r requirements.txt
 ```
 
 ## Usage
