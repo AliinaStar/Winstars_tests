@@ -9,7 +9,12 @@ from transformers import AutoTokenizer, AutoModelForTokenClassification, Trainer
 from sklearn.model_selection import train_test_split
 
 def create_animal_ner_dataset():
-    """Створення синтетичного датасету для NER з назвами тварин"""
+    '''
+    Creates a synthetic dataset for NER with animal names
+
+    Returns:
+        pandas.DataFrame: dataset with synthetic examples
+    '''
     animals = ["bear", "beaver", "chimpanzee", "fox", "kangaroo", "lion", "otter", "porcupine", "raccoon", "wolf"]
     
     templates = [
@@ -48,24 +53,60 @@ def create_animal_ner_dataset():
     return pd.DataFrame(examples)
 
 class NERDataset(Dataset):
+    '''
+    Dataset class for named entity recognition
+
+    Attributes:
+        encodings (dict): tokenized inputs and labels
+    '''
     def __init__(self, encodings):
+        '''
+        Constructor for NERDataset class
+
+        Args:
+            encodings (dict): tokenized inputs and labels
+        '''
         self.encodings = encodings
 
     def __len__(self):
+        '''
+        Returns the number of examples in the dataset
+
+        Returns:
+            int: number of examples
+        '''
         return len(self.encodings["input_ids"])
 
     def __getitem__(self, idx):
+        '''
+        Returns the item at the specified index
+
+        Args:
+            idx (int): index of the item
+
+        Returns:
+            dict: dictionary with tokenized inputs and labels
+        '''
         item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
         return item
 
 def tokenize_and_align_labels(tokenizer, texts, all_entities):
+    '''
+    Tokenizes the input texts and aligns the labels with the tokenized inputs
+
+    Args:
+        tokenizer (transformers.AutoTokenizer): tokenizer for the model
+        texts (list): list of input texts
+        all_entities (list): list of entity annotations
+    Returns:
+        dict: dictionary with tokenized inputs and labels
+    '''
     tokenized_inputs = tokenizer(texts, padding=True, truncation=True, return_tensors="pt")
     
     labels = []
     for i, (text, entities) in enumerate(zip(texts, all_entities)):
         label = [0] * len(tokenized_inputs["input_ids"][i])  # "O" for all tokens
         
-        # Якщо entities є строкою (після завантаження з CSV), перетворюємо її в список
         if isinstance(entities, str):
             try:
                 entities = ast.literal_eval(entities)
@@ -99,6 +140,12 @@ def tokenize_and_align_labels(tokenizer, texts, all_entities):
     return tokenized_inputs
 
 def main(args):
+    '''
+    Main function for named entity recognition
+
+    Args:
+        args (argparse.Namespace): command-line arguments
+    '''
     if args.dataset_path and os.path.exists(args.dataset_path):
         df = pd.read_csv(args.dataset_path)
     else:

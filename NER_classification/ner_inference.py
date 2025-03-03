@@ -3,7 +3,21 @@ import torch
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 
 class AnimalNER:
+    '''
+    Class for named entity recognition
+
+    Attributes:
+        tokenizer (transformers.AutoTokenizer): tokenizer for the model
+        model (transformers.AutoModelForTokenClassification): trained NER model
+        animals (list): list of animal names
+    '''
     def __init__(self, model_path):
+        '''
+        Constructor for AnimalNER class
+
+        Args:
+            model_path (str): path to the trained NER model
+        '''
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModelForTokenClassification.from_pretrained(model_path)
         self.model.eval()
@@ -12,6 +26,12 @@ class AnimalNER:
                        "lion", "otter", "porcupine", "raccoon", "wolf"]
     
     def extract_animals(self, text):
+        '''
+        Extracts animal names from the text
+
+        Args:
+            text (str): input text
+        '''
         inputs = self.tokenizer(text, return_tensors="pt", return_offsets_mapping=True, padding=True)
         offset_mapping = inputs.pop("offset_mapping")[0]
         
@@ -21,7 +41,7 @@ class AnimalNER:
         
         animal_tokens = []
         for idx, pred in enumerate(predictions):
-            if pred == 1:  # 1 відповідає класу "ANIMAL"
+            if pred == 1:  # 1 is class "ANIMAL"
                 start, end = offset_mapping[idx]
                 token = text[start:end]
                 if token.strip():
@@ -36,7 +56,6 @@ class AnimalNER:
                 if full_match:
                     found_animals.append(animal)
             else:
-                # Для простих назв (наприклад, "lion")
                 for token in animal_tokens:
                     if animal in token:
                         found_animals.append(animal)
@@ -45,6 +64,12 @@ class AnimalNER:
         return list(set(found_animals))
 
 def main(args):
+    '''
+    Main function for named entity recognition
+
+    Args:
+        args (argparse.Namespace): command-line arguments
+    '''
     ner = AnimalNER(args.model_path)
     
     if args.text:

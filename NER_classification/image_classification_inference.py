@@ -7,21 +7,32 @@ from PIL import Image
 import json
 
 class AnimalClassifier:
+    '''
+    Class for image classification
+    
+    Attributes:
+        model_path (str): path to the trained classifier model
+        class_names (list): list of class names
+        model (torch.nn.Module): trained model
+        transform (torchvision.transforms.Compose): image transformation
+    '''
     def __init__(self, model_path):
-        # Завантаження моделі
+        '''
+        Constructor for AnimalClassifier class
+        
+        Args:
+            model_path (str): path to the trained classifier model
+        '''
         checkpoint = torch.load(model_path, map_location=torch.device('cpu'))
         
-        # Отримання класів
         self.class_names = checkpoint['class_names']
         
-        # Ініціалізація моделі
         self.model = models.resnet50(pretrained=False)
         num_ftrs = self.model.fc.in_features
         self.model.fc = nn.Linear(num_ftrs, len(self.class_names))
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.model.eval()
         
-        # Перетворення для зображень
         self.transform = transforms.Compose([
             transforms.Resize(256),
             transforms.CenterCrop(224),
@@ -30,24 +41,32 @@ class AnimalClassifier:
         ])
     
     def predict(self, image_path):
-        """Класифікує зображення і повертає назву класу та впевненість"""
-        # Завантаження та перетворення зображення
+        '''
+        Predicts the class of the image
+
+        Args:
+            image_path (str): path to the image file
+        '''
         image = Image.open(image_path).convert('RGB')
         image_tensor = self.transform(image).unsqueeze(0)
         
-        # Передбачення
         with torch.no_grad():
             outputs = self.model(image_tensor)
             probabilities = torch.nn.functional.softmax(outputs, dim=1)
             conf, predicted = torch.max(probabilities, 1)
         
-        # Повертаємо клас і впевненість
         class_name = self.class_names[predicted.item()]
         confidence = conf.item()
         
         return class_name, confidence
 
 def main(args):
+    '''
+    Main function for image classification
+
+    Args:
+        args (argparse.Namespace): command-line arguments
+    '''
     classifier = AnimalClassifier(args.model_path)
     
     if args.image_path:
@@ -66,7 +85,6 @@ def main(args):
                 print(f"Predicted class: {class_name} (confidence: {confidence:.4f})")
                 print("-" * 50)
         
-        # Зберігаємо результати в JSON
         if args.output_file:
             with open(args.output_file, 'w') as f:
                 json.dump(results, f, indent=4)
